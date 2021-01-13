@@ -37,11 +37,16 @@ int main(int argc, char const *argv[])
 /**
  * @brief makes an empty new node
  * 
- * @return node* 
+ * @return node* and null if failed 
  */
 node *newNode()
 {
     node *a = (node *)malloc(sizeof(node));
+    if (a == NULL)
+    {
+        return NULL;
+    }
+
     a->is_word = FALSE;
     a->count = 0;
     a->letter = '\0';
@@ -52,6 +57,13 @@ node *newNode()
     return a;
 }
 
+/**
+ * @brief add a string of words to the trie
+ * 
+ * @param root the base of the trie
+ * @param txt the txt to put in
+ * @return boolean false if failed
+ */
 boolean addString(node *root, char *txt)
 {
     int more_words = 1;
@@ -66,6 +78,10 @@ boolean addString(node *root, char *txt)
             addWord(root, str);
         }
         free(str);
+        if (more_words == -1)
+        {
+            return FALSE;
+        }
     }
 
     return TRUE;
@@ -77,23 +93,33 @@ boolean addString(node *root, char *txt)
  * @param txt the txt to look in
  * @param str the returned word
  * @param wordNumber what number of word to look
- * @return int return 1 if succeeded 0 if no word found
+ * @return int return 1 if succeeded 0 if no word found -1 if failed
  */
 int getNextWord(char *txt, char **str, int wordNumber)
 {
     int strSIZE = 10;
     *str = (char *)malloc(sizeof(char) * strSIZE);
+    if (*str == NULL)
+    {
+        return -1;
+    }
+
     int i = 0;
     int posInWord = 0;
     int passedWord = 0;
+    char *tmp; //for checking realloc
     while (*(txt + i) != '\n' && *(txt + i) != '\0' && passedWord != wordNumber)
     {
         if (*(txt + i) != '\t' && *(txt + i) != ' ' && *(txt + i) != '\r')
         {
-            if (posInWord > strSIZE - 2)
+            if (posInWord > strSIZE - 2) //if the word is too big
             {
                 strSIZE *= 2;
-                *str = (char *)realloc(*str, sizeof(char) * strSIZE);
+                tmp = (char *)realloc(*str, sizeof(char) * strSIZE);
+                if (tmp == NULL)
+                    return -1;
+                else
+                    *str = tmp;
             }
             *(*str + posInWord++) = *(txt + i++);
             *(*str + posInWord) = '\0';
@@ -130,6 +156,10 @@ int getNextWord(char *txt, char **str, int wordNumber)
 boolean addWord(node *root, char *word)
 {
     char *fixedWord = fixWords(word);
+    if (fixedWord == NULL) //check for failed malloc
+    {
+        return FALSE;
+    }
     char *f = fixedWord;
     while (*fixedWord != '\0')
     {
@@ -144,6 +174,11 @@ boolean addWord(node *root, char *word)
         else if (root->children[*fixedWord - 'a'] == NULL)
         {
             root->children[*fixedWord - 'a'] = newNode();
+            if (root->children[*fixedWord - 'a'] == NULL)
+            {
+                free(f);
+                return FALSE;
+            }
         }
         else
         {
@@ -160,7 +195,7 @@ boolean addWord(node *root, char *word)
  * @brief this fuction return the word in lowercase and jump on non letters
  * 
  * @param word the word
- * @return char* of the new word
+ * @return char* of the new word, null if fail
  */
 char *fixWords(char *word)
 {
@@ -171,6 +206,10 @@ char *fixWords(char *word)
         size++;
     }
     char *newWord = (char *)malloc(sizeof(char) * size);
+    if (newWord == NULL)
+    {
+        return NULL;
+    }
     int i = 0;
     while (*word != '\0')
     {

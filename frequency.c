@@ -25,7 +25,7 @@ int main(int argc, char const *argv[])
 {
     node *root;
     root = newNode();
-    addString(root, "ab23 24 khglk 323 2324 242497");
+    addString(root, "abc ab abcd");
     if (root->children[1] == NULL)
     {
         printf("works");
@@ -163,11 +163,15 @@ boolean addWord(node *root, char *word)
     char *f = fixedWord;
     while (*fixedWord != '\0')
     {
+        if (root->letter == *fixedWord)
+        {
+            fixedWord++;
+        }
         if (root->letter == '\0')
         {
             root->letter = *(fixedWord++);
         }
-        else if (root->children[*fixedWord - 'a'] != NULL)
+        if (root->children[*fixedWord - 'a'] != NULL)
         {
             root = root->children[*fixedWord - 'a'];
         }
@@ -179,14 +183,16 @@ boolean addWord(node *root, char *word)
                 free(f);
                 return FALSE;
             }
+            root = root->children[*fixedWord - 'a'];
         }
         else
         {
             free(f);
+            printf("error in addWord\n");
             return FALSE;
         }
     }
-    root->is_word = TRUE;
+    root->is_word = TRUE; //wont register for some reason
     free(f);
     return TRUE;
 }

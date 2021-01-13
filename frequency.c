@@ -160,22 +160,25 @@ boolean addWord(node *root, char *word)
     {
         return FALSE;
     }
+    int i = 0;
     char *f = fixedWord;
     while (*fixedWord != '\0')
     {
         if (root->letter == *fixedWord)
         {
             fixedWord++;
+            i++;
         }
         if (root->letter == '\0')
         {
             root->letter = *(fixedWord++);
+            root->count = i++;
         }
-        if (root->children[*fixedWord - 'a'] != NULL)
+        if (*fixedWord != '\0' && root->children[*fixedWord - 'a'] != NULL)
         {
             root = root->children[*fixedWord - 'a'];
         }
-        else if (root->children[*fixedWord - 'a'] == NULL)
+        else if (*fixedWord != '\0' && root->children[*fixedWord - 'a'] == NULL)
         {
             root->children[*fixedWord - 'a'] = newNode();
             if (root->children[*fixedWord - 'a'] == NULL)
@@ -185,14 +188,8 @@ boolean addWord(node *root, char *word)
             }
             root = root->children[*fixedWord - 'a'];
         }
-        else
-        {
-            free(f);
-            printf("error in addWord\n");
-            return FALSE;
-        }
     }
-    root->is_word = TRUE; //wont register for some reason
+    root->is_word = TRUE;
     free(f);
     return TRUE;
 }

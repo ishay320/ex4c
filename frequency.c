@@ -20,6 +20,7 @@ boolean addWord(node *root, char *word);
 char *fixWords(char *word);
 int getNextWord(char *txt, char **str, int wordNumber);
 boolean addString(node *root, char *txt);
+boolean removeTrie(node *root);
 
 int main(int argc, char const *argv[])
 {
@@ -30,7 +31,7 @@ int main(int argc, char const *argv[])
     {
         printf("works");
     }
-    free(root);
+    removeTrie(root);
     return 0;
 }
 
@@ -55,6 +56,31 @@ node *newNode()
         a->children[i] = NULL;
     }
     return a;
+}
+
+/**
+ * @brief recursive function that deconstruct the trie from the pos given + the pos given
+ *  in O(n)
+ * 
+ * @param root the pos in the trie to deconstruct
+ * @return boolean if succeeded
+ */
+boolean removeTrie(node *root)
+{
+    if (root == NULL)
+    {
+        return TRUE;
+    }
+    for (int i = 0; i < NUM_LETTERS; i++)
+    {
+        boolean c = removeTrie(root->children[i]);
+        if (!c)
+        {
+            return FALSE;
+        }
+    }
+    free(root);
+    return TRUE;
 }
 
 /**

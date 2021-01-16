@@ -1,3 +1,8 @@
 .vscode
 frequency
 test.txt
+frequency_r_expected.txt
+frequency_expected.txt
+hw4.txt
+input.txt
+check_submition.py

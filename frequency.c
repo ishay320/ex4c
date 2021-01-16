@@ -90,7 +90,7 @@ void printRec(node *root, char *n, char f, int posInN)
     {
         printf("%s %ld\n", n, root->count);
     }
-    if (f == 'f')
+    if (f == 'r')
     {
         for (int i = NUM_LETTERS - 1; i >= 0; i--)
         {

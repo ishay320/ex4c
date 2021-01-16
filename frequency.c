@@ -167,7 +167,6 @@ boolean removeTrie(node *root)
  * 
  * @param root the base of the trie
  * @param txt the txt to put in
- * @param offset the offset in the word numbering
  * @return return the num of word read -1 if failed
  */
 int addString(node *root, char *txt)

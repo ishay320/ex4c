@@ -19,10 +19,10 @@ typedef struct node
 } node;
 
 node *newNode();
-boolean addWord(node *root, char *word, int wordNumber);
+boolean addWord(node *root, char *word);
 char *fixWords(char *word);
 int getNextWord(char *txt, char **str, int wordNumber);
-int addString(node *root, char *txt, int offset);
+int addString(node *root, char *txt);
 boolean removeTrie(node *root);
 void printTrie(node *root, char f);
 void printRec(node *root, char *n, char f, int posInN);
@@ -39,7 +39,6 @@ int main(int argc, char const *argv[])
 
     char line[LINE_SIZE] = {0};
     int lineCount = 1;
-    int offset = 0;
 
     while (lineCount++ != NUM_OF_LINES)
     {
@@ -47,8 +46,7 @@ int main(int argc, char const *argv[])
         {
             break;
         }
-        int wordRead = addString(root, line, offset); //add the line to the trie
-        if (wordRead == -1)                           //check for errors
+        if (addString(root, line) == -1) //add the line to the trie and check for errors
         {
             printf("error");
             if (!removeTrie(root))
@@ -58,7 +56,6 @@ int main(int argc, char const *argv[])
             }
             return -1;
         }
-        offset += wordRead;
     }
     printTrie(root, f);
     if (!removeTrie(root))
@@ -173,7 +170,7 @@ boolean removeTrie(node *root)
  * @param offset the offset in the word numbering
  * @return return the num of word read -1 if failed
  */
-int addString(node *root, char *txt, int offset)
+int addString(node *root, char *txt)
 {
     int more_words = 1;
     int i = 0;
@@ -185,13 +182,9 @@ int addString(node *root, char *txt, int offset)
         more_words = getNextWord(txt, &str, i);
         if (more_words)
         {
-            if (addWord(root, str, i + offset))
+            if (addWord(root, str))
             {
                 word_number_for_return += 1;
-            }
-            else
-            {
-                offset--;
             }
         }
         free(str);
@@ -266,12 +259,11 @@ int getNextWord(char *txt, char **str, int wordNumber)
 /**
  * @brief fill the trie with the word given
  *  
- * @param wordNumber the pos of the word in the txt
  * @param root the root of the tree
  * @param word the word
  * @return boolean true if successful false if failed
  */
-boolean addWord(node *root, char *word, int wordNumber)
+boolean addWord(node *root, char *word)
 {
     char *fixedWord = fixWords(word);
     if (*fixedWord == '\0')
@@ -331,7 +323,7 @@ boolean addWord(node *root, char *word, int wordNumber)
         }
     }
     root->is_word = TRUE;
-    root->count = wordNumber;
+    root->count += 1;
     free(f);
     return TRUE;
 }
